@@ -398,6 +398,19 @@ declare function list(options?: ListOptions): Promise<App[]>;
 declare function search(options: SearchOptions): Promise<App[] | number[]>;
 
 /**
+ * Alternative search using Apple's MZStore endpoint.
+ * Drop-in replacement for `search()` — same options, same return type.
+ *
+ * Uses the internal storefront API that the App Store web client calls,
+ * which still works after Apple deprecated `itunes.apple.com/search`.
+ *
+ * Two-step process (same pattern as PlayStoreService.searchWithDetails):
+ *   1. MZStore search → returns app IDs
+ *   2. iTunes lookup by IDs → returns full App objects
+ */
+declare function mzSearch(options: SearchOptions): Promise<App[] | number[]>;
+
+/**
  * Retrieves all apps from a specific developer
  * @param options - Options including developer ID
  * @returns Promise resolving to array of apps
@@ -569,4 +582,4 @@ declare function privacy(options: PrivacyOptions): Promise<PrivacyDetails>;
  */
 declare function versionHistory(options: VersionHistoryOptions): Promise<VersionHistory[]>;
 
-export { type App, type AppOptions, type BaseOptions, type Category, type Collection, type DeveloperOptions, type Device, type ListOptions, type PrivacyDetails, type PrivacyOptions, type PrivacyType, type RatingHistogram, type Ratings, type RatingsOptions, type Review, type ReviewsOptions, type SearchOptions, type SimilarOptions, type Sort, type SuggestOptions, type Suggestion, type VersionHistory, type VersionHistoryOptions, app, category, collection, developer, device, list, markets, privacy, ratings, reviews, search, similar, sort, suggest, versionHistory };
+export { type App, type AppOptions, type BaseOptions, type Category, type Collection, type DeveloperOptions, type Device, type ListOptions, type PrivacyDetails, type PrivacyOptions, type PrivacyType, type RatingHistogram, type Ratings, type RatingsOptions, type Review, type ReviewsOptions, type SearchOptions, type SimilarOptions, type Sort, type SuggestOptions, type Suggestion, type VersionHistory, type VersionHistoryOptions, app, category, collection, developer, device, list, markets, mzSearch, privacy, ratings, reviews, search, similar, sort, suggest, versionHistory };

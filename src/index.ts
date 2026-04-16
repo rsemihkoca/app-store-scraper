@@ -7,6 +7,7 @@
 export { app } from './lib/app.js';
 export { list } from './lib/list.js';
 export { search } from './lib/search.js';
+export { mzSearch } from './lib/mz-search.js';
 export { developer } from './lib/developer.js';
 export { reviews } from './lib/reviews.js';
 export { ratings } from './lib/ratings.js';

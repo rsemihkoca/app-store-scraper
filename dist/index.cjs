@@ -719,6 +719,41 @@ async function search(options) {
   return paginatedResults.map((result) => cleanApp(result));
 }
 
+// src/lib/mz-search.ts
+var MZ_SEARCH_URL = "https://search.itunes.apple.com/WebObjects/MZStore.woa/wa/search?clientApplication=Software&media=software&term=";
+function paginate(arr, num, page) {
+  const p = Math.max(1, page) - 1;
+  const start = num * p;
+  return arr.slice(start, start + num);
+}
+async function mzSearch(options) {
+  const { term, num = 50, page = 1, country = "us", lang, idsOnly, requestOptions } = options;
+  if (!term) {
+    throw new Error("term is required");
+  }
+  const url = MZ_SEARCH_URL + encodeURIComponent(term);
+  const storeFront = storeId(country);
+  const language = lang || "en-us";
+  const body = await doRequest(url, {
+    headers: {
+      "X-Apple-Store-Front": `${storeFront},24 t:native`,
+      "Accept-Language": language,
+      ...requestOptions?.headers || {}
+    }
+  });
+  const parsed = JSON.parse(body);
+  const bubbles = parsed?.bubbles;
+  const firstBubble = Array.isArray(bubbles) ? bubbles[0] : void 0;
+  const rawResults = firstBubble?.results;
+  const ids = Array.isArray(rawResults) ? rawResults.map((r) => r.id).filter(Boolean) : [];
+  if (ids.length === 0) return [];
+  const windowedIds = paginate(ids, num, page);
+  if (idsOnly) {
+    return windowedIds;
+  }
+  return lookup(windowedIds, "id", country, lang, requestOptions);
+}
+
 // src/lib/developer.ts
 async function developer(options) {
   const { devId, country = "us", lang, requestOptions } = options;
@@ -917,6 +952,7 @@ exports.developer = developer;
 exports.device = device;
 exports.list = list;
 exports.markets = markets;
+exports.mzSearch = mzSearch;
 exports.privacy = privacy;
 exports.ratings = ratings;
 exports.reviews = reviews;
